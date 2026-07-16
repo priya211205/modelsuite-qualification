@@ -32,7 +32,7 @@ const SubmissionsPage = () => {
   const tdCls = 'px-5 py-4 border-b border-border align-middle';
 
   return (
-    <div className="flex min-h-screen bg-bg-dark">
+    <div className="flex min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 transition-colors duration-300">
       <Sidebar />
 
       <main className="ml-60 flex-1 px-10 py-9">

@@ -28,7 +28,7 @@ const TalentDashboard = () => {
   const handleRefresh = () => { loadAvailable(); loadMyTasks(); };
 
   return (
-    <div className="flex min-h-screen" style={{ background: '#050505' }}>
+    <div className="flex min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 transition-colors duration-300">
       <TalentSidebar />
 
       <main className="ml-[220px] flex-1 px-8 py-8" style={{ maxWidth: 'calc(100vw - 220px)' }}>

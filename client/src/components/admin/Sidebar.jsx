@@ -1,5 +1,6 @@
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
+import ThemeToggle from '../ThemeToggle';
 
 /* ── Clean SVG line-art icons (no emojis, no AI icons) ── */
 const IconDashboard = () => (
@@ -99,12 +100,15 @@ const Sidebar = () => {
             </div>
           </div>
 
-          <button
-            onClick={() => { logout(); navigate('/login'); }}
-            title="Sign out"
-            className="logout-btn">
-            <IconLogout />
-          </button>
+          <div className="flex items-center gap-2">
+            <ThemeToggle />
+            <button
+              onClick={() => { logout(); navigate('/login'); }}
+              title="Sign out"
+              className="logout-btn">
+              <IconLogout />
+            </button>
+          </div>
         </div>
       </div>
     </aside>

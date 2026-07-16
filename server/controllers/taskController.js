@@ -1,4 +1,6 @@
-﻿const Task = require('../models/Task');
+const mongoose = require('mongoose');
+const Task = require('../models/Task');
+const User = require('../models/User');
 
 // @desc  Get all tasks
 // @route GET /api/tasks
@@ -41,6 +43,23 @@ const createTask = async (req, res) => {
   const { title, description, status, assignedTo, dueDate } = req.body;
 
   try {
+    if (!title || !title.trim() || !description || !description.trim()) {
+      return res.status(400).json({ message: 'Title and description are required' });
+    }
+
+    if (assignedTo) {
+      if (!mongoose.Types.ObjectId.isValid(assignedTo)) {
+        return res.status(400).json({ message: 'Invalid assigned user ID format' });
+      }
+      const assignedUser = await User.findById(assignedTo);
+      if (!assignedUser) {
+        return res.status(400).json({ message: 'Assigned user not found' });
+      }
+      if (assignedUser.role !== 'Talent') {
+        return res.status(400).json({ message: 'Tasks can only be assigned to users with the Talent role' });
+      }
+    }
+
     const task = await Task.create({
       title,
       description,
@@ -60,9 +79,24 @@ const createTask = async (req, res) => {
 // @route PUT /api/tasks/:id
 // @access Admin
 const updateTask = async (req, res) => {
+  const { assignedTo } = req.body;
   try {
     const task = await Task.findById(req.params.id);
     if (!task) return res.status(404).json({ message: 'Task not found' });
+
+    if (assignedTo) {
+      if (!mongoose.Types.ObjectId.isValid(assignedTo)) {
+        return res.status(400).json({ message: 'Invalid assigned user ID format' });
+      }
+      const assignedUser = await User.findById(assignedTo);
+      if (!assignedUser) {
+        return res.status(400).json({ message: 'Assigned user not found' });
+      }
+      if (assignedUser.role !== 'Talent') {
+        return res.status(400).json({ message: 'Tasks can only be assigned to users with the Talent role' });
+      }
+    }
+
     // including internal fields like createdBy or __v
     const updated = await Task.findByIdAndUpdate(
       req.params.id,

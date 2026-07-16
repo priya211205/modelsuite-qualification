@@ -41,9 +41,35 @@ const STATUS_CLASS = {
   Rejected:  'status-badge-Rejected',
 };
 
+const getDueBadge = (dueDate, status) => {
+  if (!dueDate || status === 'Approved') return null;
+
+  const due = new Date(dueDate);
+  const now = new Date();
+  const diffTime = due.getTime() - now.getTime();
+
+  if (diffTime < 0) {
+    return (
+      <span className="shrink-0 inline-block mt-1 px-2 py-[2px] rounded-full text-[10px] font-bold tracking-[0.3px] bg-red-500/10 text-red-500 border border-red-500/20 w-fit">
+        Overdue
+      </span>
+    );
+  } else if (diffTime <= 24 * 60 * 60 * 1000) {
+    return (
+      <span className="shrink-0 inline-block mt-1 px-2 py-[2px] rounded-full text-[10px] font-bold tracking-[0.3px] bg-amber-500/10 text-amber-500 border border-amber-500/20 w-fit">
+        Due Soon
+      </span>
+    );
+  }
+  return null;
+};
+
 const TasksTable = ({ tasks, onEdit, onRefresh }) => {
 
   const handleDelete = async (id) => {
+    if (!window.confirm("Are you sure you want to delete this task? This action cannot be undone.")) {
+      return;
+    }
     try {
       await deleteTask(id);
       onRefresh();
@@ -127,7 +153,10 @@ const TasksTable = ({ tasks, onEdit, onRefresh }) => {
 
               {/* Due date */}
               <td className="table-td" style={{ color: '#6B7280', whiteSpace: 'nowrap' }}>
-                {fmtDate(task.dueDate)}
+                <div className="flex flex-col gap-0.5 justify-center">
+                  <span>{fmtDate(task.dueDate)}</span>
+                  {getDueBadge(task.dueDate, task.status)}
+                </div>
               </td>
 
               {/* Created */}

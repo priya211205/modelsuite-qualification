@@ -1,4 +1,4 @@
-﻿import { claimTask } from '../../api/talent';
+import { claimTask } from '../../api/talent';
 
 const STATUS_CLASS = {
   Open:      'status-badge-Open',
@@ -6,6 +6,29 @@ const STATUS_CLASS = {
   Submitted: 'status-badge-Submitted',
   Approved:  'status-badge-Approved',
   Rejected:  'status-badge-Rejected',
+};
+
+const getDueBadge = (dueDate, status) => {
+  if (!dueDate || status === 'Approved') return null;
+
+  const due = new Date(dueDate);
+  const now = new Date();
+  const diffTime = due.getTime() - now.getTime();
+
+  if (diffTime < 0) {
+    return (
+      <span className="shrink-0 inline-block px-2 py-[2px] rounded-full text-[10px] font-bold tracking-[0.3px] bg-red-500/10 text-red-500 border border-red-500/20">
+        Overdue
+      </span>
+    );
+  } else if (diffTime <= 24 * 60 * 60 * 1000) {
+    return (
+      <span className="shrink-0 inline-block px-2 py-[2px] rounded-full text-[10px] font-bold tracking-[0.3px] bg-amber-500/10 text-amber-500 border border-amber-500/20">
+        Due Soon
+      </span>
+    );
+  }
+  return null;
 };
 
 const TaskCard = ({ task, showClaimButton = false, onClaimed }) => {
@@ -25,11 +48,14 @@ const TaskCard = ({ task, showClaimButton = false, onClaimed }) => {
       {/* Header: title + status */}
       <div className="flex items-start justify-between gap-2.5">
         <p className="text-[15px] font-semibold text-text-primary leading-snug">{task.title || 'Untitled Task'}</p>
-        {task.status && (
-          <span className={`shrink-0 inline-block px-2.5 py-[3px] rounded-full text-[11px] font-semibold tracking-[0.3px] ${STATUS_CLASS[task.status] || ''}`}>
-            {task.status}
-          </span>
-        )}
+        <div className="flex flex-col items-end gap-1.5 shrink-0">
+          {task.status && (
+            <span className={`inline-block px-2.5 py-[3px] rounded-full text-[11px] font-semibold tracking-[0.3px] ${STATUS_CLASS[task.status] || ''}`}>
+              {task.status}
+            </span>
+          )}
+          {getDueBadge(task.dueDate, task.status)}
+        </div>
       </div>
 
       
